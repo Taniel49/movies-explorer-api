@@ -17,11 +17,7 @@ module.exports.getUser = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'NotFoundError') {
-        next(new NotFoundError('NotFoundError'));
-      } else if (err.name === 'CastError') {
-        next(new CastError('Неверный ID'));
-      } else next(err);
+      next(err);
     });
 };
 
@@ -42,8 +38,6 @@ module.exports.patchUser = (req, res, next) => {
         next(new ConflictError('Пользователь с таким email уже существует'));
       } else if (err.name === 'ValidationError') {
         next(new ValidationError('Неверные данные'));
-      } else if (err.name === 'NotFoundError') {
-        next(new NotFoundError('NotFoundError'));
       } else if (err.name === 'CastError') {
         next(new CastError('Неверный ID'));
       } else next(err);
@@ -92,14 +86,8 @@ module.exports.login = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Неверные данные'));
-      } else if (err.name === 'AuthError') {
+      if (err.name === 'AuthError') {
         next(new AuthError('Неправильная почта или пароль'));
-      } else if (err.name === 'CastError') {
-        next(new CastError('Неверный ID'));
-      } else if (err.name === 'Unauthorized') {
-        next(new AuthError('Ошибка авторизации'));
       } else next(err);
     });
 };

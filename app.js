@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { MONGO_DATABASE } = process.env;
+const { NODE_ENV, MONGO_DATABASE } = process.env;
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -28,7 +28,7 @@ app.use(
 );
 
 mongoose.connect(
-  MONGO_DATABASE,
+  NODE_ENV === 'production' ? MONGO_DATABASE : 'mongodb://localhost:27017/moviesdb',
   {
     useNewUrlParser: true,
   },

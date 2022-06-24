@@ -58,20 +58,13 @@ module.exports.deleteMovie = (req, res, next) => {
         throw new NotFoundError('NotFoundError');
       } else if (!movie.owner.equals(req.user._id)) {
         throw new ForbiddenError('Нет доступа');
-      }
-    })
-    .then((movie) => (
-      Movie.findOneAndRemove({ _id: req.params.movieID })
+      } return movie.remove()
         .then(() => {
           res.send({ data: movie });
-        })
-    )).catch((err) => {
-      if (err.name === 'NotFoundError') {
-        next(new NotFoundError('NotFoundError'));
-      } else if (err.name === 'CastError') {
+        });
+    }).catch((err) => {
+      if (err.name === 'CastError') {
         next(new CastError('Неверный ID'));
-      } else if (err.name === 'ForbiddenError') {
-        next(new ForbiddenError('Нет доступа'));
       } else next(err);
     });
 };

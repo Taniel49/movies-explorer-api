@@ -8,3 +8,5 @@ router.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
+
+module.exports = router;
