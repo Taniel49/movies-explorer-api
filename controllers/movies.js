@@ -2,22 +2,44 @@ const Movie = require('../models/movie');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const CastError = require('../errors/CastError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getAllMovies = (req, res, next) => {
-  Movie.find({})
+  const owner = req.user._id;
+  Movie.find({ owner })
     .then((movie) => res.send({ data: movie }))
     .catch((err) => next(err));
 };
 
 module.exports.postMovie = (req, res, next) => {
+  const owner = req.user._id;
   const {
-    // eslint-disable-next-line
-    country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId,
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    nameRU,
+    nameEN,
+    thumbnail,
+    movieId,
   } = req.body;
 
   Movie.create({
-    // eslint-disable-next-line
-    country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId,
+    owner,
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    nameRU,
+    nameEN,
+    thumbnail,
+    movieId,
   })
     .then((movie) => {
       res.send({ data: movie });
@@ -30,15 +52,26 @@ module.exports.postMovie = (req, res, next) => {
 };
 
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findOneAndRemove({ _id: req.params.movieID })
+  Movie.findById(req.params.movieID)
     .then((movie) => {
-      res.send({ data: movie });
+      if (!movie) {
+        throw new NotFoundError('NotFoundError');
+      } else if (!movie.owner.equals(req.user._id)) {
+        throw new ForbiddenError('Нет доступа');
+      }
     })
-    .catch((err) => {
+    .then((movie) => (
+      Movie.findOneAndRemove({ _id: req.params.movieID })
+        .then(() => {
+          res.send({ data: movie });
+        })
+    )).catch((err) => {
       if (err.name === 'NotFoundError') {
         next(new NotFoundError('NotFoundError'));
       } else if (err.name === 'CastError') {
         next(new CastError('Неверный ID'));
+      } else if (err.name === 'ForbiddenError') {
+        next(new ForbiddenError('Нет доступа'));
       } else next(err);
     });
 };

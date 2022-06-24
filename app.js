@@ -1,18 +1,18 @@
 require('dotenv').config();
+
+const { MONGO_DATABASE } = process.env;
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { celebrate, Joi, errors } = require('celebrate');
-const router = require('express').Router();
+const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const ValidationError = require('./errors/ValidationError');
+const NotFoundError = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
 const users = require('./routes/users');
 const movies = require('./routes/movies');
-const {
-  createUser, login,
-} = require('./controllers/users');
+const signin = require('./routes/signin');
+const signup = require('./routes/signup');
 
 const { PORT = 3000 } = process.env;
 
@@ -27,45 +27,38 @@ app.use(
   }),
 );
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
-  useNewUrlParser: true,
-});
+mongoose.connect(
+  MONGO_DATABASE,
+  {
+    useNewUrlParser: true,
+  },
+);
 
 app.use(requestLogger);
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-  }),
-}), createUser);
+app.use('/', signin);
+app.use('/', signup);
 
 app.use('/', auth, users);
 app.use('/', auth, movies);
-app.use(errorLogger);
-// eslint-disable-next-line no-unused-vars
-router.use('*', (res, req, next) => {
-  next(new ValidationError('Страница не найдена'));
+
+app.use('*', auth, (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
+
+app.use(errorLogger);
+
 app.use(errors());
-// eslint-disable-next-line no-unused-vars
+
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
+  res.status(statusCode).send({
+    message: statusCode === 500
+      ? 'На сервере произошла ошибка'
+      : message,
+  });
+  next();
 });
 
 app.listen(PORT, () => {
