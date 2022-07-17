@@ -1,1 +1,1 @@
-# movies-explorer-api
+api.mydiploma.students.nomoreparties.sbs
