@@ -14,7 +14,7 @@ const movies = require('./routes/movies');
 const signin = require('./routes/signin');
 const signup = require('./routes/signup');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 8008 } = process.env;
 
 const app = express();
 
@@ -22,15 +22,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'https://mydiploma.students.nomoreparties.sbs',
+    origin: 'http://localhost:3000',
     credentials: true,
   }),
 );
 
 mongoose.connect(
-  NODE_ENV === 'production' ? MONGO_DATABASE : 'mongodb://localhost:27017/moviesdb',
+  NODE_ENV === 'production' ? MONGO_DATABASE : 'mongodb://SG-sheer-noodle-2009-54214.servers.mongodirector.com:27017/admin',
   {
     useNewUrlParser: true,
+    auth: {
+      authdb: 'admin',
+      username: 'admin',
+      password: 'ax1MaHzlVbqecX0T',
+    },
   },
 );
 
