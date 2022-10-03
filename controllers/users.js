@@ -78,14 +78,16 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
+  console.log('1', req.body);
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      console.log('2', user);
       res.send({
         token: jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'),
       });
     })
     .catch((err) => {
+      console.log('3', err);
       if (err.name === 'AuthError') {
         next(new AuthError('Неправильная почта или пароль'));
       } else next(err);
