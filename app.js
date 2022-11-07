@@ -28,7 +28,7 @@ app.use(
 );
 
 mongoose.connect(
-  NODE_ENV === 'production' ? MONGO_DATABASE : 'mongodb://admin:SG-somber-hyssop-3510-54812.servers.mongodirector.com:27017/admin',
+  NODE_ENV === 'production' ? MONGO_DATABASE : 'mongodb://SG-somber-hyssop-3510-54812.servers.mongodirector.com:27017/admin',
   {
     useNewUrlParser: true,
     auth: {
