@@ -2,9 +2,6 @@ const {
   NODE_ENV,
   JWT_SECRET,
   MONGO_DATABASE,
-  MONGO_AUTH,
-  MONGO_USER,
-  MONGO_PASS,
 } = process.env;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -52,12 +49,8 @@ module.exports.patchUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  console.log(
-    MONGO_DATABASE,
-    MONGO_AUTH,
-    MONGO_USER,
-    MONGO_PASS,
-  );
+  console.log(MONGO_DATABASE);
+  console.log('check');
   const {
     name,
     email,
