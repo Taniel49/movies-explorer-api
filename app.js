@@ -1,6 +1,11 @@
 require('dotenv').config();
 
-const { NODE_ENV, MONGO_DATABASE } = process.env;
+const {
+  MONGO_DATABASE,
+  MONGO_AUTH,
+  MONGO_USER,
+  MONGO_PASS,
+} = process.env;
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -28,13 +33,13 @@ app.use(
 );
 
 mongoose.connect(
-  NODE_ENV === 'production' ? MONGO_DATABASE : 'mongodb://SG-somber-hyssop-3510-54812.servers.mongodirector.com:27017/admin',
+  MONGO_DATABASE,
   {
     useNewUrlParser: true,
     auth: {
-      authdb: 'admin',
-      username: 'admin',
-      password: 'PtqTTQdPrCsfCwvU',
+      authdb: MONGO_AUTH,
+      username: MONGO_USER,
+      password: MONGO_PASS,
     },
   },
 );
@@ -42,6 +47,10 @@ mongoose.connect(
 app.use(requestLogger);
 
 app.use('/', signin);
+console.log(MONGO_DATABASE,
+  MONGO_AUTH,
+  MONGO_USER,
+  MONGO_PASS)
 app.use('/', signup);
 
 app.use('/', auth, users);
