@@ -47,10 +47,12 @@ mongoose.connect(
 app.use(requestLogger);
 
 app.use('/', signin);
-console.log(MONGO_DATABASE,
+console.log(
+  MONGO_DATABASE,
   MONGO_AUTH,
   MONGO_USER,
-  MONGO_PASS)
+  MONGO_PASS,
+);
 app.use('/', signup);
 
 app.use('/', auth, users);
